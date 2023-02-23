@@ -1,36 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { dbService } from "../fbase";
-import { collection, addDoc, getDocs } from "firebase/firestore"; 
-
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore"; 
+import Nweet from "../components/Nweet";
 
 const Home = ({ userObj }) => {
 
     const [nweet, setNweet] = useState("");
     const [nweets, setNweets] = useState([]);
-    const getNweets = async () => {
-        const dbNweets = await getDocs(collection(dbService, "nweets"));
-        dbNweets.forEach((doc) => {
-            const nweetObject = {
-                ...doc.data(),
-                id: doc.id,
-            }
-            setNweets((prev) => [nweetObject, ...prev]);
-        });
-    };
+
     useEffect(() => {
-        getNweets();
+        const q = query(collection(dbService, 'nweets'),
+            orderBy('createdAt'));
+        onSnapshot(q, querySnapshot => {
+            const nweetArr = querySnapshot.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data(),
+                };
+            });
+        setNweets(nweetArr);
+        console.log('Current tweets: ', nweetArr);
+        });
     }, []);
-    console.log(nweets);
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        const docRef = await addDoc(collection(dbService, "nweets"), {
-            text: nweet,
-            createdAt: Date.now(),
-            creatorId: userObj.uid,
-        })
-        console.log("Document written with ID: ", docRef.id);
-        console.log(docRef);
+        try {
+            const docRef = await addDoc(collection(dbService, "nweets"), {
+                text: nweet,
+                createdAt: Date.now(),
+                creatorId: userObj.uid,
+            })
+            console.log("Document written with ID: ", docRef.id);
+            console.log(docRef);
+        } catch (error) {
+            console.log(error.massage);
+        }
         setNweet("");
     }
 
@@ -50,10 +55,12 @@ const Home = ({ userObj }) => {
             </form>
             <div>
                 {nweets.map((nweet) => (
-                    <div key={nweet.id}>
-                        <p>{nweet.text}</p>
-                        {nweet.creatorId? (<p>{nweet.creatorId}</p>):null}
-                    </div>
+                    <>
+                        <Nweet 
+                            key={nweet.id} 
+                            nweetObj={nweet} 
+                            isOwner={nweet.creatorId === userObj.uid} />
+                    </>
                 ))}
             </div>
         </>
