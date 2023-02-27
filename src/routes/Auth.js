@@ -1,7 +1,10 @@
 import React from "react";
 import { signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTwitter, faGoogle, faGithub,} from "@fortawesome/free-brands-svg-icons";
 import AuthForm from "../components/AuthForm";
 import { authService } from "../fbase";
+
 
 const Auth = () => {
     const onSocialCLick = async (event) => {
@@ -18,11 +21,17 @@ const Auth = () => {
     };
     
     return (
-        <div>
+        <div className="authContainer">
+            <FontAwesomeIcon
+                icon={faTwitter}
+                color={"#04AAFF"}
+                size="3x"
+                style={{ marginBottom: 30 }}
+        />
             <AuthForm />   
-            <div>
-                <button name="google" onClick={onSocialCLick}>Continue with Google</button>
-                <button name="github" onClick={onSocialCLick}>Continue with Github</button>
+            <div className="authBtns">
+                <button name="google" onClick={onSocialCLick} className="authBtn">Continue with Google <FontAwesomeIcon icon={faGoogle} /></button>
+                <button name="github" onClick={onSocialCLick} className="authBtn">Continue with Github <FontAwesomeIcon icon={faGithub} /></button>
             </div>
         </div>
     )

@@ -22,9 +22,9 @@ const Home = ({ userObj }) => {
     }, []);
   
     return(
-        <>
+        <div className="container">
             <NweetForm userObj={userObj} />
-            <div>
+            <div style={{ margin: 30}}>
                 {nweets.map((nweet) => (
                     <>
                         <Nweet 
@@ -34,7 +34,7 @@ const Home = ({ userObj }) => {
                     </>
                 ))}
             </div>
-        </>
+        </div>
     )
 };
 
